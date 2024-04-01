@@ -1,29 +1,18 @@
 class ConfigurationController {
-  
   constructor(configurationService) {
     this.configurationService = configurationService;
   }
 
-  login(req, res) {
-    const {
-      username,
-      password
-    } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({
-        message: 'Username and password are required'
-      });
+  get(req, res) {
+    const configuration = this.configurationService.getById(req.params.path);
+    if (configuration) {
+      res.status(200).json(configuration.data);
     }
-
-    return res.status(200).json({
-      message: 'Login successful'
-    });
+    else {
+      res.status(404).json({ message: 'Configuration not found.' });
+    }
   }
 
-  // register(req, res) {
-
-  // }
-
 }
-export default ConfigurationController;
+
+module.exports = ConfigurationController;

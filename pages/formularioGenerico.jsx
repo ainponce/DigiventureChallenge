@@ -9,6 +9,7 @@ const FormularioGenerico = ({ path }) => {
 
     const handleCountryChange = (e) => {
         const selectedCountry = e.target.value;
+        console.log("Selected Country: ", selectedCountry);
         setCountry(selectedCountry);
         if (selectedCountry === 'other') {
             setCustomCountryVisible(true);

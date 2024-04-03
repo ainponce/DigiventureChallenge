@@ -5,6 +5,7 @@ class UserController {
     }
 
     async login(req, res) {
+        console.log("paso algo")
         try {
 
             const { username, password, remember } = req.body;

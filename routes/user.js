@@ -1,8 +1,7 @@
 
 const router = require('express').Router();
 
-
-const UserService = require("../services/UserService");
+const UserService = require("../services/ConfigurationUser");
 const UserController = require("../controllers/UserController");
 
 const UserServiceInstance = new UserService();

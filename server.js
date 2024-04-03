@@ -10,6 +10,7 @@ const handle = app.getRequestHandler();
 const ConfigurationModel = require("./models/inputs.json");
 const ConfigurationService = require("./services/ConfigurationService");
 const ConfigurationController = require("./controllers/ConfigurationController");
+const mongodbConnection = require("./db/mongodbConnection");
 
 //Configuration instances
 const ConfigurationServiceInstance = new ConfigurationService(
@@ -20,13 +21,26 @@ const ConfigurationControllerInstance = new ConfigurationController(
   ConfigurationServiceInstance
 );
 
+mongodbConnection().then(() => {
+  console.log("Connected to MongoDB");
+}).catch((error) => {
+  console.log("Error connecting to MongoDB", error);
+});
+
+
 app.prepare().then(() => {
   const server = express();
+  server.use(express.json());
+  //Routes 
+  server.use("/api", require("./routes/user.js"));
 
   //get configuration by path
   server.get("/configuration/:path", (req, res) =>
     ConfigurationControllerInstance.get(req, res)
   );
+
+  //DB connection
+
 
   server.post("/:path", (req, res) => {
     console.log(req.body);

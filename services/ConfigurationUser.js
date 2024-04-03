@@ -1,5 +1,5 @@
 const connection = require('../db/mongodbConnection.js');
-const User = require('../models/UserSchema');
+const User = require('../models/userSchema.js');
 const bcrypt = require("bcryptjs")
 
 class UserService {
@@ -14,7 +14,6 @@ class UserService {
             } else {
                 return false
             }
-
         } catch (error) {
             return false;
         }

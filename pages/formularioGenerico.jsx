@@ -1,15 +1,31 @@
 import React, { useState } from 'react';
-import { Button, Form, FormGroup, Input, Label, Col } from 'reactstrap';
+import { Button, Form, FormGroup, Input, Label, Col, Alert } from 'reactstrap';
 import json from '../models/inputs.json';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const FormularioGenerico = ({ path }) => {
     const [country, setCountry] = useState('');
     const [customCountryVisible, setCustomCountryVisible] = useState(false);
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordMatch, setPasswordMatch] = useState(true);
+
+    const handlePasswordChange = (e) => {
+        const newPassword = e.target.value;
+        setPassword(newPassword);
+        if (confirmPassword !== '') {
+            setPasswordMatch(newPassword === confirmPassword);
+        }
+    };
+
+    const handleConfirmPasswordChange = (e) => {
+        const newPassword = e.target.value;
+        setConfirmPassword(newPassword);
+        setPasswordMatch(password === newPassword);
+    };
 
     const handleCountryChange = (e) => {
         const selectedCountry = e.target.value;
-        console.log("Selected Country: ", selectedCountry);
         setCountry(selectedCountry);
         if (selectedCountry === 'other') {
             setCustomCountryVisible(true);
@@ -20,6 +36,11 @@ const FormularioGenerico = ({ path }) => {
 
     const submitForm = (e) => {
         e.preventDefault();
+
+        if (!passwordMatch) {
+            return alert("Las contraseñas no coinciden!");
+        }
+
         let data;
         const method = json[path].inputs.filter(input => input.type === 'button').map(button => button.method)[0];
 
@@ -33,7 +54,7 @@ const FormularioGenerico = ({ path }) => {
                 fullname: e.target.fullname.value,
                 username: e.target.username.value,
                 email: e.target.email.value,
-                password: e.target.password.value,
+                password: password,
                 country: country === "other" ? e.target.custom_country.value : country,
             };
         }
@@ -58,14 +79,17 @@ const FormularioGenerico = ({ path }) => {
     };
 
     const returnInput = (input, index) => {
+        // input link
         if (input.type === "link") {
             return <FormGroup key={index}><a target={input.target} href={input.to}>{input.label}</a></FormGroup>;
         }
 
+        // input button
         if (input.type === "button") {
-            return <FormGroup key={index} className='d-flex justify-content-end'><Button className='m-2 justify-content-end'>{input.label}</Button></FormGroup>;
+            return <FormGroup key={index} className='d-flex justify-content-end'><Button className='mt-3 justify-content-end'>{input.label}</Button></FormGroup>;
         }
 
+        // input checkbox
         if (input.type === "checkbox") {
             return (
                 <FormGroup key={index} className='d-flex align-items-center mt-2'>
@@ -83,10 +107,44 @@ const FormularioGenerico = ({ path }) => {
             );
         }
 
+        // input password
+        if (input.type === "password" && input.name === "password") {
+            return (
+                <FormGroup key={index}>
+                    <Label for={input.id} className='mr-2 mb-2'>{input.label}</Label>
+                    <Input
+                        id={input.id}
+                        name={input.name}
+                        placeholder={input.placeholder}
+                        type={input.type}
+                        onChange={handlePasswordChange}
+                    />
+                </FormGroup>
+            );
+        }
+
+        // input confirm password
+        if (input.type === "password" && input.name === "confirm_password") {
+            return (
+                <FormGroup key={index}>
+                    <Label for={input.id} className='mr-2 mb-2'>{input.label}</Label>
+                    <Input
+                        id={input.id}
+                        name={input.name}
+                        placeholder={input.placeholder}
+                        type={input.type}
+                        onChange={handleConfirmPasswordChange}
+                    />
+                    {!passwordMatch && <Alert color="warning">Las contraseñas no coinciden!</Alert>}
+                </FormGroup>
+            );
+        }
+
+        // input select
         if (input.type === "select" && input.name === "country") {
             return (
                 <FormGroup key={index} className=''>
-                    <Label for={input.id} className='pr-2'>{input.label}</Label>
+                    <Label for={input.id} className='pr-2 mb-2'>{input.label}</Label>
                     <Input
                         id={input.id}
                         name={input.name}
@@ -102,10 +160,11 @@ const FormularioGenerico = ({ path }) => {
             );
         }
 
-        if (input.type === "text" && input.name === "custom_country" && customCountryVisible) {
+        // input text
+        if (input.type === "text" && input.name === "custom_country" && customCountryVisible === true) {
             return (
                 <FormGroup key={index}>
-                    <Label for={input.id} className='mr-2'>{input.label}</Label>
+                    <Label for={input.id} className='mr-2 mb-2'>{input.label}</Label>
                     <Input
                         id={input.id}
                         name={input.name}
@@ -116,17 +175,20 @@ const FormularioGenerico = ({ path }) => {
             );
         }
 
-        return (
-            <FormGroup key={index}>
-                <Label for={input.id} className='mr-2'>{input.label}</Label>
-                <Input
-                    id={input.id}
-                    name={input.name}
-                    placeholder={input.placeholder}
-                    type={input.type}
-                />
-            </FormGroup>
-        );
+        // input text (default)
+        if (input.name != "custom_country") {
+            return (
+                <FormGroup key={index}>
+                    <Label for={input.id} className='mr-2 mb-2'>{input.label}</Label>
+                    <Input
+                        id={input.id}
+                        name={input.name}
+                        placeholder={input.placeholder}
+                        type={input.type}
+                    />
+                </FormGroup>
+            );
+        }
     };
 
     return (

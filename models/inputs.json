@@ -63,7 +63,7 @@
       },
       {
         "type": "password",
-        "name": "password",
+        "name": "passwordConfirmation",
         "label": "Confirm your password",
         "regex": "^(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$",
         "conditions": {
